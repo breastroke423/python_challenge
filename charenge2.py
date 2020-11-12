@@ -10,6 +10,10 @@ from datetime import datetime
 # ↑日時処理
 import sys
 # ↑pythonシステムに関わる処理を行う関数
+import openpyxl
+# ↑Excelに出力
+
+
 
 def scrape(url, worksheer):
   html = requests.get(url)
@@ -43,45 +47,48 @@ def scrape(url, worksheer):
       text = ','.join(text_list)
       worksheet.update_acell(chr(start_ascii + i) + str(r), text)
 
-def next_available_row(worksheet):
-  # Googleスプレッドシートの上から数えて一番始めの空の行番号を指定するための関数
-  str_list = list(filter(None, worksheet.col_values(1))) # fastest
-  # 空文字がある場合、除去
-  return str(len(str_list) + 1)
+# def next_available_row(worksheet):
+#   # Googleスプレッドシートの上から数えて一番始めの空の行番号を指定するための関数
+#   str_list = list(filter(None, worksheet.col_values(1))) # fastest
+#   # 空文字がある場合、除去
+#   return str(len(str_list) + 1)
 
-def get_gspread_book(secret_key, book_name):
-  scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-  # scope変数に2つのAPIを記述しないとアクセストークンを3600秒毎に
-  # 発行し続けなければならないので指定。
-  credentials = ServiceAccountCredentials.from_json_keyfile_name(secret_key, scope)
-  # 認証情報を設定。secret_keyにはダウンロードしたjsonファイルを指定
-  gc = gspread.authorize(credentials)
-  # 認証情報を使用して、GoogleAPIにログイン
-  book = gc.open(book_name)
-  return book
+# def get_gspread_book(secret_key, book_name):
+#   scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+#   # scope変数に2つのAPIを記述しないとアクセストークンを3600秒毎に
+#   # 発行し続けなければならないので指定。
+#   credentials = ServiceAccountCredentials.from_json_keyfile_name(secret_key, scope)
+#   # 認証情報を設定。secret_keyにはダウンロードしたjsonファイルを指定
+#   gc = gspread.authorize(credentials)
+#   # 認証情報を使用して、GoogleAPIにログイン
+#   book = gc.open(book_name)
+#   return book
 
 
 ''' メイン処理 '''
 if __name__ == '__main__':
     url = 'https://hashikake.com/scraping-python'
     print('url: ' + url + ' のTitle、hタグを抽出します。')
-    secret_key = 'My Project 〇〇〇〇.json'
-    book_name = 'HTMLスクレイピングテスト'
-    sheet_name = 'シート1'
+    # secret_key = 'My Project 〇〇〇〇.json'
+    # book_name = 'HTMLスクレイピングテスト'
+    # sheet_name = 'シート1'
     try:
-        sheet = get_gspread_book(secret_key, book_name).worksheet(sheet_name)
-    except SpreadsheetNotFound:
-        print('Spreadsheet: ' + book_name + 'が見つかりませんでした')
-        sys.exit()
-    except WorksheetNotFound:
-        print('Worksheet: ' + sheet_name + 'が見つかりませんでした')
-        sys.exit()
+      # sheet = get_gspread_book(secret_key, book_name).worksheet(sheet_name)
+      wb = openpyxl.Workbook()
+      sheet = wb.active
+      sheet.title = 'scraping'
+    # except SpreadsheetNotFound:
+    #   print('Spreadsheet: ' + book_name + 'が見つかりませんでした')
+    #   sys.exit()
+    # except WorksheetNotFound:
+    #   print('Worksheet: ' + sheet_name + 'が見つかりませんでした')
+    #   sys.exit()
     scrape(url, sheet)
-    print('処理が完了しました。')
+    print("done")
 
 
 
-
+# 20201112 初級編から学びなおし、完成させる
 
 
 
